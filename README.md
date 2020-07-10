@@ -1,4 +1,5 @@
 # coffee-machine
+
 Second homework 
 Write a program that prints the steps necessary to make coffee. The program should prints all lines as in the example below.
 
