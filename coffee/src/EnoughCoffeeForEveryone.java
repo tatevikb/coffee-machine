@@ -27,18 +27,16 @@ public class EnoughCoffeeForEveryone {
 
     /* The method checks, has the coffee machine enough supplies to make the specified amount of coffee?
     And prints the result */
-    private static void canMakeRequiredAmount(int cups, int aw, int am, int ac)
+    private static String canMakeRequiredAmount(int cups, int aw, int am, int ac)
     {
-
         int canMake = countAmountOfCups(aw, am, ac);
         int diffCups = canMake - cups;
 
         if(diffCups == 0)
-            System.out.println("Yes, I can make that amount of coffee");
+            return "Yes, I can make that amount of coffee";
         else if(diffCups < 0)
-            System.out.println("No, I can make only " +  canMake + " cup(s) of coffee");
-        else
-            System.out.println("Yes, I can make that amount of coffee (and even " +  diffCups + " more than that)");
+            return "No, I can make only " +  canMake + " cup(s) of coffee";
+       return "Yes, I can make that amount of coffee (and even " +  diffCups + " more than that)";
     }
 
     public static void main(String[] args)
@@ -48,7 +46,8 @@ public class EnoughCoffeeForEveryone {
         int availableCoffee = readValueFor("Write how many ml of coffee beans the coffee machine has");
         int numberOfCups = readValueFor("Write how many cups of coffee you will need");
 
-        canMakeRequiredAmount(numberOfCups, availableWater, availableMilk, availableCoffee);
+        String msg = canMakeRequiredAmount(numberOfCups, availableWater, availableMilk, availableCoffee);
+        System.out.println(msg);
     }
 }
 
