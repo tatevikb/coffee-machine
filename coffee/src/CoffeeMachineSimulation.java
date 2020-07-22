@@ -1,6 +1,18 @@
 import java.util.Scanner;
 
 public class CoffeeMachineSimulation {
+
+    private enum State {
+        Ready,
+        Off,
+        SelectCoffee,
+        FillWater,
+        FillCoffee,
+        FillMilk,
+        FillCups
+    }
+    private Scanner scan = new Scanner(System.in);
+
     private final int ESPRESSO = 0;
     private final int LATTE = 1;
     private final int CAPPUCCINO = 2;
@@ -16,7 +28,7 @@ public class CoffeeMachineSimulation {
     private int money = 550;
     private int cups = 9;
 
-    private String state = "ready";
+    private State state = State.Ready;
 
     private CoffeeMachineSimulation()
     {
@@ -35,6 +47,7 @@ public class CoffeeMachineSimulation {
         milkPerCup[CAPPUCCINO] = 100;
         moneyPerCup[CAPPUCCINO] = 6;
 
+        setReady();
     }
 
     /**
@@ -85,11 +98,9 @@ public class CoffeeMachineSimulation {
         return has;
     }
 
-    private void buy(String coffeeType)
+    private void buy(int index)
     {
-        int index = Integer.parseInt(coffeeType);
         --index;
-
 
         if (hasResources(index)) {
             System.out.println("I have enough resources, making you a coffee!");
@@ -109,85 +120,93 @@ public class CoffeeMachineSimulation {
         money = 0;
     }
 
-    private void action(String input)
+    private void setReady()
     {
-        // check to see if the input is integer representation
-        boolean isInt = true;
-        for(int i = 0; i < input.length(); ++i)
-            if(!Character.isDigit(input.charAt(i))) {
-                isInt = false;
-                break;
-            }
+        state = State.Ready;
+        System.out.println("Write action (buy, fill, take, remaining, exit): ");
+        System.out.print("> ");
+    }
 
-        if(!isInt) {
-            System.out.println("Write action (buy, fill, take, remaining, exit): ");
+    private void askForNumber(String prompt)
+    {
+        System.out.println(prompt);
+        System.out.print("> ");
+    }
+
+    /**
+     *check to see if the input is integer representation
+     */
+    private boolean isInteger(String input)
+    {
+        for (int i = 0; i < input.length(); ++i) {
+            if (!Character.isDigit(input.charAt(i))) {
+                return false;
+            }
         }
 
-        System.out.println("> " + input);
+        return true;
+    }
 
+    private void action(String input)
+    {
+        boolean isInt = isInteger(input);
 
         if(input.equals("remaining")) {
             remaining();
+            setReady();
         }
         else if(input.equals("buy")) {
-            state = "select-coffee";
-            System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
+            state = State.SelectCoffee;
+            askForNumber("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
         }
-        else if(isInt && state.equals("select-coffee")) {
-            buy(input);
-            state = "ready";
+        else if(isInt && state == State.SelectCoffee) {
+            buy(Integer.parseInt(input));
+            setReady();
         }
         else if(input.equals("fill")) {
-            state = "fill-water";
-            System.out.println("Write how many ml of water do you want to add:");
+            state = State.FillWater;
+            askForNumber("Write how many ml of water do you want to add:");
         }
-        else if(isInt && state.equals("fill-water")) {
+        else if(isInt && state == State.FillWater) {
             water += Integer.parseInt(input);
-            state = "fill-milk";
-            System.out.println("Write how many ml of milk do you want to add:");
+            state = State.FillMilk;
+            askForNumber("Write how many ml of milk do you want to add:");
         }
-        else if(isInt && state.equals("fill-milk")) {
+        else if(isInt && state == State.FillMilk) {
             milk += Integer.parseInt(input);
-            state = "fill-coffee";
-            System.out.println("Write how many grams of coffee beans do you want to add:");
+            state = State.FillCoffee;
+            askForNumber("Write how many grams of coffee beans do you want to add:");
         }
-        else if(isInt && state.equals("fill-coffee")) {
+        else if(isInt && state == State.FillCoffee) {
             coffee += Integer.parseInt(input);
-            state = "fill-cups";
-            System.out.println("Write how many disposable cups of coffee do you want to add:");
+            state = State.FillCups;
+            askForNumber("Write how many disposable cups of coffee do you want to add:");
         }
-        else if(isInt && state.equals("fill-cups")) {
+        else if(isInt && state == State.FillCups) {
             cups += Integer.parseInt(input);
-            state = "ready";
+            setReady();
         }
         else if(input.equals("take")) {
             take();
+            setReady();
         }
         else if(input.equals("exit")) {
-            state = "off";
+            state = State.Off;
         }
+    }
+
+    public boolean isOff()
+    {
+        return state == State.Off;
     }
 
     public static void main(String[] args)
     {
         CoffeeMachineSimulation cm = new CoffeeMachineSimulation();
 
-//        cm.action("remaining");
-//        cm.action("buy");
-//        cm.action("2");
-//        cm.action("remaining");
-//        cm.action("buy");
-//        cm.action("2");
-        cm.action("fill");
-        cm.action("1000");
-        cm.action("0");
-        cm.action("0");
-        cm.action("0");
-//        cm.action("remaining");
-//        cm.action("remaining");
-//        cm.action("buy");
-//        cm.action("2");
-//        cm.action("remaining");
-//        cm.action("take");
+        while(!cm.isOff()) {
+            String input = cm.scan.nextLine();
+            cm.action(input);
+        }
     }
 }
