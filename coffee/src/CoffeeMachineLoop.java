@@ -167,30 +167,24 @@ public class CoffeeMachineLoop {
     {
         setupMachine();
         String action = "";
-        int actionType = 5;
 
         while (!action.equals("exit")) {
             action = readStringValue("Write action (buy, fill, take, remaining, exit)");
 
             switch (ActionType.valueOf(action.toUpperCase())) {
                 case BUY:
-                    action = "buy";
                     buy();
                     break;
                 case FILL:
-                    action = "fill";
                     fill();
                     break;
                 case REMAINING:
-                    action = "remaining";
                     remaining();
                     break;
                 case TAKE:
-                    action = "take";
                     take();
                     break;
                 case EXIT:
-                    action = "exit";
                     break;
                 default:
                     System.out.println("Invalid action '" + action + "'. Try again.");
