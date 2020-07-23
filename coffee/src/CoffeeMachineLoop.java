@@ -155,30 +155,65 @@ public class CoffeeMachineLoop {
         return val;
     }
 
+    private enum ActionType {
+        BUY,
+        FILL,
+        TAKE,
+        REMAINING,
+        EXIT,
+        INVALID;
+
+        public static ActionType fromString(String nm)
+        {
+            if(nm.equals("buy"))
+                return BUY;
+            else if(nm.equals("fill"))
+                return FILL;
+            else if(nm.equals("take"))
+                return TAKE;
+            else if(nm.equals("remaining"))
+                return REMAINING;
+            else if(nm.equals("exit"))
+                return EXIT;
+
+            return INVALID;
+        }
+    }
+
     public static void main(String[] args)
     {
         setupMachine();
+        String action = "";
+        int actionType = 5;
 
-        while (true) {
-            String action = readStringValue("Write action (buy, fill, take, remaining, exit)");
-            if (action.equals("buy")) {
-                buy();
-            }
-            else if (action.equals("fill")) {
-                fill();
-            }
-            else if (action.equals("take")) {
-                take();
-            }
-            else if (action.equals("remaining")) {
-                remaining();
-            }
-            else if(action.equals("exit")) {
-                break;
-            }
-            else {
-                System.out.println("Invalid action '" + action + "'. Try again.");
+        while (!action.equals("exit")) {
+            action = readStringValue("Write action (buy, fill, take, remaining, exit)");
+
+            switch (ActionType.fromString(action)) {
+                case BUY:
+                    action = "buy";
+                    buy();
+                    break;
+                case FILL:
+                    action = "fill";
+                    fill();
+                    break;
+                case REMAINING:
+                    action = "remaining";
+                    remaining();
+                    break;
+                case TAKE:
+                    action = "take";
+                    take();
+                    break;
+                case EXIT:
+                    action = "exit";
+                    break;
+                default:
+                    System.out.println("Invalid action '" + action + "'. Try again.");
+                    break;
             }
         }
+
     }
 }
