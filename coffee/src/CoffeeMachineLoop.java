@@ -160,24 +160,7 @@ public class CoffeeMachineLoop {
         FILL,
         TAKE,
         REMAINING,
-        EXIT,
-        INVALID;
-
-        public static ActionType fromString(String nm)
-        {
-            if(nm.equals("buy"))
-                return BUY;
-            else if(nm.equals("fill"))
-                return FILL;
-            else if(nm.equals("take"))
-                return TAKE;
-            else if(nm.equals("remaining"))
-                return REMAINING;
-            else if(nm.equals("exit"))
-                return EXIT;
-
-            return INVALID;
-        }
+        EXIT
     }
 
     public static void main(String[] args)
@@ -189,7 +172,7 @@ public class CoffeeMachineLoop {
         while (!action.equals("exit")) {
             action = readStringValue("Write action (buy, fill, take, remaining, exit)");
 
-            switch (ActionType.fromString(action)) {
+            switch (ActionType.valueOf(action.toUpperCase())) {
                 case BUY:
                     action = "buy";
                     buy();
