@@ -1,13 +1,6 @@
 import java.util.Scanner;
 
 public class CoffeeMachineSimulation {
-
-    private Scanner scan = new Scanner(System.in);
-
-   // private final int ESPRESSO = 0;
-  //  private final int LATTE = 1;
-  //  private final int CAPPUCCINO = 2;
-
     private int[] waterPerCup = new int[3];
     private int[] milkPerCup = new int[3];
     private int[] coffeePerCup = new int[3];
@@ -126,7 +119,7 @@ public class CoffeeMachineSimulation {
     }
 
     /**
-     *
+     * Handles numeric inputs for buy and fill actions.
      */
     private void numericInput(int number)
     {
@@ -154,7 +147,7 @@ public class CoffeeMachineSimulation {
                 cups += number;
                 setReady();
                 break;
-            }
+        }
     }
 
     /**
@@ -189,7 +182,8 @@ public class CoffeeMachineSimulation {
     }
 
     /**
-     * Determines which kind of input is inserted.
+     * Determines which kind of input is given
+     * and calls corresponding method.
      */
     private void actionOrNumeric(String input)
     {
@@ -218,10 +212,12 @@ public class CoffeeMachineSimulation {
 
     public static void main(String[] args)
     {
+        Scanner scan = new Scanner(System.in);
+
         CoffeeMachineSimulation cm = new CoffeeMachineSimulation();
 
         while(!cm.isOff()) {
-            String input = cm.scan.nextLine();
+            String input = scan.nextLine();
             cm.actionOrNumeric(input);
         }
     }
