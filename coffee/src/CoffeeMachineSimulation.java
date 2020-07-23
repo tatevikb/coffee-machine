@@ -2,20 +2,11 @@ import java.util.Scanner;
 
 public class CoffeeMachineSimulation {
 
-    private enum State {
-        Ready,
-        Off,
-        SelectCoffee,
-        FillWater,
-        FillCoffee,
-        FillMilk,
-        FillCups
-    }
     private Scanner scan = new Scanner(System.in);
 
-    private final int ESPRESSO = 0;
-    private final int LATTE = 1;
-    private final int CAPPUCCINO = 2;
+   // private final int ESPRESSO = 0;
+  //  private final int LATTE = 1;
+  //  private final int CAPPUCCINO = 2;
 
     private int[] waterPerCup = new int[3];
     private int[] milkPerCup = new int[3];
@@ -32,20 +23,20 @@ public class CoffeeMachineSimulation {
 
     private CoffeeMachineSimulation()
     {
-        waterPerCup[ESPRESSO] = 250;
-        coffeePerCup[ESPRESSO] = 16;
-        milkPerCup[ESPRESSO] = 0;
-        moneyPerCup[ESPRESSO] = 4;
+        waterPerCup[CoffeeType.ESPRESSO.ordinal()] = 250;
+        coffeePerCup[CoffeeType.ESPRESSO.ordinal()] = 16;
+        milkPerCup[CoffeeType.ESPRESSO.ordinal()] = 0;
+        moneyPerCup[CoffeeType.ESPRESSO.ordinal()] = 4;
 
-        waterPerCup[LATTE] = 350;
-        coffeePerCup[LATTE] = 20;
-        milkPerCup[LATTE] = 75;
-        moneyPerCup[LATTE] = 7;
+        waterPerCup[CoffeeType.LATTE.ordinal()] = 350;
+        coffeePerCup[CoffeeType.LATTE.ordinal()] = 20;
+        milkPerCup[CoffeeType.LATTE.ordinal()] = 75;
+        moneyPerCup[CoffeeType.LATTE.ordinal()] = 7;
 
-        waterPerCup[CAPPUCCINO] = 200;
-        coffeePerCup[CAPPUCCINO] = 12;
-        milkPerCup[CAPPUCCINO] = 100;
-        moneyPerCup[CAPPUCCINO] = 6;
+        waterPerCup[CoffeeType.CAPPUCCINO.ordinal()] = 200;
+        coffeePerCup[CoffeeType.CAPPUCCINO.ordinal()] = 12;
+        milkPerCup[CoffeeType.CAPPUCCINO.ordinal()] = 100;
+        moneyPerCup[CoffeeType.CAPPUCCINO.ordinal()] = 6;
 
         setReady();
     }
@@ -64,6 +55,7 @@ public class CoffeeMachineSimulation {
         System.out.println("$" + money + " of money");
 
     }
+
     /**
      * Check for resources to make at list one cup of coffee.
      *
@@ -134,64 +126,88 @@ public class CoffeeMachineSimulation {
     }
 
     /**
-     *check to see if the input is integer representation
+     *
      */
-    private boolean isInteger(String input)
+    private void numericInput(int number)
     {
-        for (int i = 0; i < input.length(); ++i) {
-            if (!Character.isDigit(input.charAt(i))) {
-                return false;
+        switch (state) {
+            case SelectCoffee:
+                buy(number);
+                setReady();
+                break;
+            case FillWater:
+                water += number;
+                state = State.FillMilk;
+                askForNumber("Write how many ml of milk do you want to add:");
+                break;
+            case FillMilk:
+                milk += number;
+                state = State.FillCoffee;
+                askForNumber("Write how many grams of coffee beans do you want to add:");
+                break;
+            case FillCoffee:
+                coffee += number;
+                state = State.FillCups;
+                askForNumber("Write how many disposable cups of coffee do you want to add:");
+                break;
+            case FillCups:
+                cups += number;
+                setReady();
+                break;
             }
-        }
-
-        return true;
     }
 
-    private void action(String input)
+    /**
+     * Represents all actions that coffee machine can do․
+     */
+    private void processAction(String input)
     {
-        boolean isInt = isInteger(input);
+        switch (ActionType.valueOf(input.toUpperCase())) {
+            case BUY:
+                state = State.SelectCoffee;
+                askForNumber("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
+                break;
+            case FILL:
+                state = State.FillWater;
+                askForNumber("Write how many ml of water do you want to add:");
+                break;
+            case REMAINING:
+                remaining();
+                setReady();
+                break;
+            case TAKE:
+                take();
+                setReady();
+                break;
+            case EXIT:
+                state = State.Off;
+                break;
+            default:
+                System.out.println("Invalid action '" + input + "'. Try again.");
+                break;
+        }
+    }
 
-        if(input.equals("remaining")) {
-            remaining();
-            setReady();
+    /**
+     * Determines which kind of input is inserted.
+     */
+    private void actionOrNumeric(String input)
+    {
+        int number = 0;
+        // determine if the input is a number
+        boolean isInt = true;
+        try {
+            number = Integer.parseInt(input);
         }
-        else if(input.equals("buy")) {
-            state = State.SelectCoffee;
-            askForNumber("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
+        catch (NumberFormatException e) {
+            isInt = false;
         }
-        else if(isInt && state == State.SelectCoffee) {
-            buy(Integer.parseInt(input));
-            setReady();
+
+        if(isInt) {
+            numericInput(number);
         }
-        else if(input.equals("fill")) {
-            state = State.FillWater;
-            askForNumber("Write how many ml of water do you want to add:");
-        }
-        else if(isInt && state == State.FillWater) {
-            water += Integer.parseInt(input);
-            state = State.FillMilk;
-            askForNumber("Write how many ml of milk do you want to add:");
-        }
-        else if(isInt && state == State.FillMilk) {
-            milk += Integer.parseInt(input);
-            state = State.FillCoffee;
-            askForNumber("Write how many grams of coffee beans do you want to add:");
-        }
-        else if(isInt && state == State.FillCoffee) {
-            coffee += Integer.parseInt(input);
-            state = State.FillCups;
-            askForNumber("Write how many disposable cups of coffee do you want to add:");
-        }
-        else if(isInt && state == State.FillCups) {
-            cups += Integer.parseInt(input);
-            setReady();
-        }
-        else if(input.equals("take")) {
-            take();
-            setReady();
-        }
-        else if(input.equals("exit")) {
-            state = State.Off;
+        else {
+            processAction(input);
         }
     }
 
@@ -206,7 +222,7 @@ public class CoffeeMachineSimulation {
 
         while(!cm.isOff()) {
             String input = cm.scan.nextLine();
-            cm.action(input);
+            cm.actionOrNumeric(input);
         }
     }
 }
